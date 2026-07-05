@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aviation Market Live Dashboard – Europa / DE / AT</title>
+  <meta name="description" content="Live-Dashboard für Luftfahrtmarkt Europa mit Fokus Deutschland/Österreich: Aktien, Fuel-Proxies, FX, Flugbetrieb, METAR und DE/EN-News." />
+  <style>
+    :root{
+      --bg:#08111f; --bg2:#101b2c; --panel:rgba(14,27,47,.78); --panel2:rgba(255,255,255,.06); --line:rgba(255,255,255,.11);
+      --text:#eef6ff; --muted:#9db0c5; --good:#43e6a3; --bad:#ff6678; --warn:#ffd166; --blue:#80aaff; --cyan:#5be9ff; --violet:#b08cff;
+      --shadow:0 24px 80px rgba(0,0,0,.38); --radius:24px;
+    }
+    body.light{--bg:#eef4fb;--bg2:#f9fbff;--panel:rgba(255,255,255,.84);--panel2:rgba(14,27,47,.045);--line:rgba(14,27,47,.13);--text:#102033;--muted:#607084;--shadow:0 18px 55px rgba(20,40,70,.12)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 12% 0%,rgba(91,233,255,.18),transparent 28%),radial-gradient(circle at 92% 8%,rgba(176,140,255,.17),transparent 27%),radial-gradient(circle at 55% 112%,rgba(67,230,163,.10),transparent 34%),linear-gradient(135deg,var(--bg),var(--bg2) 62%,#07101a);min-height:100vh;overflow-x:hidden}
+    body.light{background:radial-gradient(circle at 12% 0%,rgba(91,160,255,.20),transparent 30%),radial-gradient(circle at 92% 8%,rgba(176,140,255,.16),transparent 29%),linear-gradient(135deg,var(--bg),var(--bg2))}
+    .grain:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.16;pointer-events:none;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E")}
+    .wrap{max-width:1500px;margin:0 auto;padding:20px 20px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:20;padding:12px 0 16px;backdrop-filter:blur(18px)}
+    .brand{display:flex;align-items:center;gap:13px;min-width:275px}.logo{width:52px;height:52px;border-radius:17px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(135deg,rgba(91,233,255,.22),rgba(128,170,255,.13));box-shadow:var(--shadow);overflow:hidden}.logo svg{width:32px;height:32px}.brand h1{font-size:18px;line-height:1.05;margin:0;letter-spacing:.15px}.brand small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.controls{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+    button,select,input{color:var(--text);background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:14px;padding:10px 12px;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}button{font-weight:800;cursor:pointer;transition:.18s transform,.18s background,.18s border-color}button:hover{transform:translateY(-1px);background:rgba(128,170,255,.13);border-color:rgba(128,170,255,.45)}button:disabled{opacity:.56;cursor:not-allowed;transform:none}.primary{background:linear-gradient(135deg,rgba(91,233,255,.24),rgba(128,170,255,.25));border-color:rgba(91,233,255,.38)}select option{background:#101b2c;color:white}.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.card,.heroMain{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px);position:relative;overflow:hidden}.heroMain{padding:28px}.heroMain:after,.card:after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent 25%,transparent 78%,rgba(91,233,255,.08));mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);mask-composite:exclude;padding:1px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:rgba(67,230,163,.10);border:1px solid rgba(67,230,163,.24);color:var(--good);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.25px}.dot{width:8px;height:8px;border-radius:99px;background:var(--good);box-shadow:0 0 0 6px rgba(67,230,163,.13)}.hero h2{font-size:clamp(35px,5.1vw,72px);line-height:.93;letter-spacing:-2.9px;margin:18px 0 13px}.hero h2 span{background:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet));-webkit-background-clip:text;color:transparent}.hero p{margin:0;max-width:900px;color:var(--muted);font-size:15px;line-height:1.6}.side{display:grid;gap:14px;padding:16px}.status{padding:17px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.035))}.status .label{color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.22px}.status .big{font-size:22px;font-weight:950;letter-spacing:-.5px;margin-top:8px}.status .sub{color:var(--muted);font-size:12px;line-height:1.4;margin-top:6px}.good{color:var(--good)!important}.bad{color:var(--bad)!important}.warn{color:var(--warn)!important}.muted{color:var(--muted)!important}.up{color:var(--good)!important}.down{color:var(--bad)!important}.neutral{color:var(--muted)!important}
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:18px 0}.kpi{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;min-height:122px;position:relative;overflow:hidden;backdrop-filter:blur(18px)}.kpi:before{content:"";position:absolute;width:110px;height:110px;border-radius:999px;right:-42px;top:-48px;background:rgba(91,233,255,.09)}.kpi .name{font-size:11px;text-transform:uppercase;letter-spacing:.25px;color:var(--muted);font-weight:900}.kpi .val{font-size:27px;font-weight:950;letter-spacing:-.8px;margin:12px 0 5px}.kpi .sub{font-size:12px;line-height:1.35;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1.22fr .78fr;gap:18px;align-items:start}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{padding:18px}.head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.head h3{font-size:18px;margin:0;letter-spacing:-.2px}.hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.42}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 14px}.pill{font-size:12px;color:var(--muted);border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px;padding:7px 10px;cursor:pointer;user-select:none}.pill.active{color:var(--text);background:rgba(91,233,255,.14);border-color:rgba(91,233,255,.34)}.search{min-width:220px;flex:1}.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;min-width:930px;background:rgba(0,0,0,.045)}th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;font-size:13px}th{position:sticky;top:0;z-index:3;background:rgba(10,22,39,.92);backdrop-filter:blur(14px);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.3px}body.light th{background:rgba(255,255,255,.93)}tr:hover td{background:rgba(128,170,255,.06)}.company{display:flex;align-items:center;gap:10px}.avatar{width:35px;height:35px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;font-weight:950;background:linear-gradient(135deg,rgba(91,233,255,.16),rgba(176,140,255,.14))}.small{font-size:12px;color:var(--muted)}.tag{font-size:11px;color:var(--muted);padding:5px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);white-space:nowrap}.spark{width:118px;height:38px;display:block}.ticker{margin:18px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.045)}.tickerTrack{display:flex;width:max-content;gap:10px;padding:10px;animation:marquee 58s linear infinite}.ticker:hover .tickerTrack{animation-play-state:paused}@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}.tickerItem{white-space:nowrap;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:14px;padding:8px 12px;font-size:12px}
+    .miniGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.mini{padding:14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045)}.mini .name{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.25px;font-weight:900}.mini .num{font-size:24px;font-weight:950;letter-spacing:-.6px;margin-top:8px}.mini .desc{color:var(--muted);font-size:12px;line-height:1.35;margin-top:4px}.barArea{display:grid;gap:10px;margin-top:10px}.barrow{display:grid;grid-template-columns:120px 1fr 58px;gap:9px;align-items:center;font-size:12px}.barlabel{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bartrack{height:11px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.07);overflow:hidden}.barfill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--bad),var(--warn),var(--good));width:50%}.opsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metarList,.newsList{display:grid;gap:10px}.newsList{max-height:520px;overflow:auto;padding-right:4px}.newsItem,.metar{padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.045)}.newsTitle{display:block;text-decoration:none;font-weight:850;line-height:1.25;font-size:13px}.newsTitle:hover{text-decoration:underline}.newsMeta,.raw{font-size:11px;color:var(--muted);line-height:1.45;margin-top:6px}.raw{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;word-break:break-word}.metarTop{display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:6px}.empty{border:1px dashed var(--line);border-radius:18px;color:var(--muted);padding:16px;text-align:center;font-size:13px}.loader{display:none;gap:7px;align-items:center;color:var(--muted);font-size:12px}.loading .loader{display:flex}.spinner{width:14px;height:14px;border-radius:99px;border:2px solid rgba(255,255,255,.13);border-top-color:var(--cyan);animation:spin .9s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.sourceStatus{display:grid;gap:9px}.sourceRow{display:grid;grid-template-columns:110px 1fr 88px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:15px;padding:10px;background:rgba(255,255,255,.04);font-size:12px}.badge{display:inline-flex;align-items:center;gap:6px}.led{width:8px;height:8px;border-radius:99px;background:var(--muted)}.ok .led{background:var(--good)}.fail .led{background:var(--bad)}.partial .led{background:var(--warn)}details{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.045);padding:12px 14px;margin-top:12px}summary{cursor:pointer;font-weight:900}.proxyBox{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}.proxyBox input{width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px}pre{white-space:pre-wrap;word-break:break-word;max-height:360px;overflow:auto;background:rgba(0,0,0,.18);border:1px solid var(--line);padding:14px;border-radius:16px;color:var(--muted);font-size:11px;line-height:1.45}code{background:rgba(255,255,255,.08);border:1px solid var(--line);padding:2px 6px;border-radius:8px;color:var(--cyan);font-size:12px}.toast{position:fixed;right:20px;bottom:20px;z-index:50;display:grid;gap:8px;max-width:430px}.toast div{padding:12px 14px;border-radius:16px;background:rgba(8,18,31,.94);border:1px solid var(--line);box-shadow:var(--shadow);font-size:13px}.footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12px;line-height:1.5}.mobileNote{display:none}
+    @media(max-width:1100px){.hero,.grid,.two{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}.sourceRow{grid-template-columns:92px 1fr}.sourceRow .small{text-align:left!important}.mobileNote{display:block}}
+    @media(max-width:700px){.wrap{padding:14px 12px 32px}.top{align-items:flex-start}.brand{min-width:0}.controls{justify-content:flex-start}.kpis{grid-template-columns:1fr 1fr}.miniGrid,.opsGrid{grid-template-columns:1fr}.hero h2{letter-spacing:-1.7px}.proxyBox{grid-template-columns:1fr}.search{min-width:100%}}
+  </style>
+</head>
+<body class="grain">
+  <div class="wrap" id="app">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M8 35.8 55 13c2.8-1.35 5.4 1.8 3.6 4.35L42.1 41l6.3 12.8c.7 1.5-.9 3-2.3 2.1l-12.7-7.8-11.2 8.1c-1.4 1-3.3-.2-3-1.9l2.7-14.4L8.5 38.8c-1.6-.1-1.9-2.3-.5-3Z" fill="url(#g)"/><defs><linearGradient id="g" x1="6" x2="59" y1="13" y2="56"><stop stop-color="#5be9ff"/><stop offset=".55" stop-color="#80aaff"/><stop offset="1" stop-color="#b08cff"/></linearGradient></defs></svg></div>
+        <div><h1>Aviation Market Live</h1><small>Europa · Deutschland · Österreich</small></div>
+      </div>
+      <div class="controls">
+        <div class="loader"><span class="spinner"></span>Live-Daten werden geladen …</div>
+        <select id="refreshSelect" title="Auto-Update">
+          <option value="0">Auto: aus</option><option value="300000">Auto: 5 Min</option><option value="900000" selected>Auto: 15 Min</option><option value="1800000">Auto: 30 Min</option><option value="3600000">Auto: 60 Min</option>
+        </select>
+        <button class="primary" id="updateBtn">↻ Jetzt updaten</button>
+        <button id="themeBtn">☾ / ☀</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="heroMain">
+        <span class="eyebrow"><span class="dot"></span>Live, aber ehrlich: keine Fake-Werte</span>
+        <h2>Luftfahrtmarkt<br><span>Dashboard</span></h2>
+        <p>Aktien, Fuel-Proxies, FX, Flughäfen, METAR, OpenSky-Verkehrslage und News. Die Seite probiert mehrere Abrufwege. Wenn eine Quelle im Browser durch CORS blockiert wird, zeigt sie das sichtbar an und nutzt Cache/Fallbacks.</p>
+      </div>
+      <aside class="card side">
+        <div class="status"><div class="label">Letztes erfolgreiches Update</div><div class="big" id="globalUpdate">Noch kein Update</div><div class="sub" id="globalUpdateSub">Klicke auf „Jetzt updaten“ oder warte auf Auto-Refresh.</div></div>
+        <div class="status"><div class="label">Datenstatus</div><div class="big" id="dataStatus">Initialisierung</div><div class="sub" id="dataStatusSub">Yahoo kann aus Browsern direkt blockiert sein. Proxy-Fallbacks sind eingebaut.</div></div>
+        <div class="status"><div class="label">Update-Knopf</div><div class="big">Manuell + Auto</div><div class="sub">Auto-Refresh läuft nur, solange die Seite offen ist. Jede Quelle bekommt ihren eigenen Zeitstempel.</div></div>
+      </aside>
+    </section>
+
+    <section class="kpis" id="kpiArea"></section>
+    <section class="ticker"><div class="tickerTrack" id="tickerTrack"></div></section>
+
+    <main class="grid">
+      <section class="card">
+        <div class="head"><div><h3>Equity Watchlist</h3><div class="hint" id="lastStockUpdate">Yahoo Finance Chart JSON über Direct/Proxy-Fallback. Kurse können börsenbedingt verzögert sein.</div></div><span class="tag" id="equityCount">0 Werte</span></div>
+        <div class="toolbar" id="filters"></div>
+        <div class="toolbar"><input id="searchInput" class="search" placeholder="Suchen: Airbus, Lufthansa, Flughafen, OEM …" /></div>
+        <div class="tableWrap"><table><thead><tr><th>Unternehmen</th><th>Fokus</th><th>Segment</th><th>Kurs</th><th>Δ</th><th>Trend</th><th>Quelle</th><th>Status</th></tr></thead><tbody id="stockBody"></tbody></table></div>
+      </section>
+
+      <section class="card">
+        <div class="head"><div><h3>Provider & Debug</h3><div class="hint">Hier siehst du, warum etwas geht oder nicht. Für stabile Yahoo-Daten: eigenen Cloudflare-Worker eintragen.</div></div><button id="clearCacheBtn">Cache löschen</button></div>
+        <div class="sourceStatus" id="sourceStatus"></div>
+        <details open>
+          <summary>Proxy für GitHub Pages / statisches Hosting</summary>
+          <div class="hint">GitHub Pages hilft bei HTTPS, aber nicht automatisch bei Yahoo-CORS. Trage hier deinen Worker ein, z. B. <code>https://dein-worker.workers.dev</code>. Die Einstellung bleibt lokal im Browser gespeichert.</div>
+          <div class="proxyBox"><input id="proxyInput" placeholder="https://dein-worker.workers.dev" /><button id="saveProxyBtn">Proxy speichern</button></div>
+          <div class="hint" id="proxyHint"></div>
+        </details>
+      </section>
+    </main>
+
+    <section class="two">
+      <section class="card">
+        <div class="head"><div><h3>Fuel, FX & Benchmarks</h3><div class="hint" id="fuelUpdated">Jet A-1 ist nicht frei als stabile Live-API verfügbar; angezeigt werden handelbare bzw. öffentliche Proxy-Indikatoren.</div></div></div>
+        <div class="miniGrid" id="fuelCards"></div>
+        <div class="tableWrap" style="margin-top:12px"><table><thead><tr><th>Indikator</th><th>Wert</th><th>Δ</th><th>Datum/Zeit</th><th>Quelle</th></tr></thead><tbody id="macroBody"></tbody></table></div>
+      </section>
+      <section class="card">
+        <div class="head"><div><h3>Market Pulse</h3><div class="hint">Durchschnittliche Tagesbewegung nach Segment. Nur erfolgreich geladene Werte fließen ein.</div></div></div>
+        <div class="miniGrid" id="pulseCards"></div>
+        <div class="barArea" id="sectorBars"></div>
+      </section>
+    </section>
+
+    <section class="two">
+      <section class="card">
+        <div class="head"><div><h3>Operations & Airport Weather</h3><div class="hint" id="opsUpdated">OpenSky + AviationWeather METAR. Bei Rate-Limits wird dies offen angezeigt.</div></div></div>
+        <div class="opsGrid" id="opsCards"></div>
+        <div class="metarList" id="metarList" style="margin-top:12px"></div>
+      </section>
+      <section class="card">
+        <div class="head"><div><h3>News Monitor</h3><div class="hint" id="newsUpdated">GDELT, hart gefiltert auf Deutsch/Englisch. Kyrillisch/Griechisch etc. wird zusätzlich herausgefiltert.</div></div><span class="tag">DE / EN only</span></div>
+        <div class="newsList" id="newsList"></div>
+      </section>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <div class="head"><div><h3>Optionaler Cloudflare Worker</h3><div class="hint">Damit Yahoo in einem statischen Dashboard zuverlässig läuft, ist ein eigener Mini-Proxy der saubere Weg. Diesen Code als Cloudflare Worker deployen und die Worker-URL oben eintragen.</div></div><button id="copyWorkerBtn">Worker-Code kopieren</button></div>
+      <pre id="workerCode"></pre>
+    </section>
+
+    <div class="footer">Hinweis: Börsenkurse/Fuel-Proxies sind Informationsdaten, keine Anlageberatung. Yahoo/FRED/OpenSky/AviationWeather/GDELT können Rate-Limits, Verzögerungen oder Ausfälle haben. Das Dashboard zeigt Fehler sichtbar an, statt Daten zu erfinden.</div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const STOCKS = [
+    {symbol:'AIR.PA', name:'Airbus', segment:'OEM', focus:'Europa', aliases:'airbus aircraft oem manufacturer eu france germany'},
+    {symbol:'BA', name:'Boeing', segment:'OEM', focus:'Global', aliases:'boeing aircraft oem usa'},
+    {symbol:'LHA.DE', name:'Lufthansa Group', segment:'Airline', focus:'Deutschland', aliases:'lufthansa austrian swiss eurowings airline germany austria'},
+    {symbol:'FRA.DE', name:'Fraport', segment:'Airport', focus:'Deutschland', aliases:'frankfurt airport flughafen deutschland'},
+    {symbol:'FLU.VI', name:'Flughafen Wien', segment:'Airport', focus:'Österreich', aliases:'vienna airport wien österreich austria'},
+    {symbol:'MTX.DE', name:'MTU Aero Engines', segment:'Supplier', focus:'Deutschland', aliases:'mtu engines aerospace supplier deutschland'},
+    {symbol:'SAF.PA', name:'Safran', segment:'Supplier', focus:'Europa', aliases:'safran engines aerospace supplier france'},
+    {symbol:'RR.L', name:'Rolls-Royce', segment:'Supplier', focus:'Europa', aliases:'rolls royce engines aerospace uk'},
+    {symbol:'RYAAY', name:'Ryanair Holdings ADR', segment:'Airline', focus:'Europa', aliases:'ryanair low cost airline europe'},
+    {symbol:'IAG.L', name:'IAG', segment:'Airline', focus:'Europa', aliases:'british airways iberia aer lingus airline'},
+    {symbol:'AF.PA', name:'Air France-KLM', segment:'Airline', focus:'Europa', aliases:'air france klm airline europe'},
+    {symbol:'EZJ.L', name:'easyJet', segment:'Airline', focus:'Europa', aliases:'easyjet airline low cost'},
+    {symbol:'WIZZ.L', name:'Wizz Air', segment:'Airline', focus:'Europa', aliases:'wizz air airline low cost'},
+    {symbol:'ADP.PA', name:'Groupe ADP', segment:'Airport', focus:'Europa', aliases:'paris airport aeroport de paris'},
+    {symbol:'AENA.MC', name:'Aena', segment:'Airport', focus:'Europa', aliases:'aena airport spain'},
+    {symbol:'HO.PA', name:'Thales', segment:'Supplier', focus:'Europa', aliases:'thales avionics aerospace defense'},
+    {symbol:'LDO.MI', name:'Leonardo', segment:'Supplier', focus:'Europa', aliases:'leonardo aerospace defense italy'},
+    {symbol:'GE', name:'GE Aerospace', segment:'Supplier', focus:'Global', aliases:'ge aerospace engines'},
+    {symbol:'RTX', name:'RTX', segment:'Supplier', focus:'Global', aliases:'rtx pratt whitney aerospace'}
+  ];
+
+  const MACROS = [
+    {symbol:'BZ=F', name:'Brent Crude', unit:'USD/bbl', group:'Fuel proxy'},
+    {symbol:'CL=F', name:'WTI Crude', unit:'USD/bbl', group:'Fuel proxy'},
+    {symbol:'HO=F', name:'Heating Oil Futures', unit:'USD/gal', group:'Fuel proxy'},
+    {symbol:'EURUSD=X', name:'EUR/USD', unit:'FX', group:'Währung'},
+    {symbol:'^GDAXI', name:'DAX', unit:'Index', group:'Benchmark'},
+    {symbol:'^STOXX', name:'STOXX Europe 600', unit:'Index', group:'Benchmark'}
+  ];
+
+  const METAR_AIRPORTS = [
+    {id:'EDDF', name:'Frankfurt'}, {id:'EDDM', name:'München'}, {id:'EDDB', name:'Berlin BER'},
+    {id:'LOWW', name:'Wien'}, {id:'LOWG', name:'Graz'}, {id:'LOWS', name:'Salzburg'}, {id:'LSZH', name:'Zürich'}, {id:'EHAM', name:'Amsterdam'}
+  ];
+
+  const CACHE_KEY = 'aviation-market-dashboard-stable-v1';
+  const SETTINGS_KEY = 'aviation-market-dashboard-settings-v1';
+  const fmt = new Intl.NumberFormat('de-DE', {maximumFractionDigits:2});
+  const fmt4 = new Intl.NumberFormat('de-DE', {maximumFractionDigits:4});
+  const pctFmt = new Intl.NumberFormat('de-DE', {signDisplay:'always', maximumFractionDigits:2});
+  const timeFmt = new Intl.DateTimeFormat('de-DE', {dateStyle:'medium', timeStyle:'medium'});
+  const shortFmt = new Intl.DateTimeFormat('de-DE', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+  const $ = sel => document.querySelector(sel);
+  const els = {
+    updateBtn: $('#updateBtn'), themeBtn: $('#themeBtn'), refreshSelect: $('#refreshSelect'), clearCacheBtn: $('#clearCacheBtn'), globalUpdate: $('#globalUpdate'), globalUpdateSub: $('#globalUpdateSub'), dataStatus: $('#dataStatus'), dataStatusSub: $('#dataStatusSub'),
+    kpiArea: $('#kpiArea'), tickerTrack: $('#tickerTrack'), stockBody: $('#stockBody'), filters: $('#filters'), searchInput: $('#searchInput'), equityCount: $('#equityCount'), lastStockUpdate: $('#lastStockUpdate'),
+    sourceStatus: $('#sourceStatus'), proxyInput: $('#proxyInput'), saveProxyBtn: $('#saveProxyBtn'), proxyHint: $('#proxyHint'), fuelCards: $('#fuelCards'), fuelUpdated: $('#fuelUpdated'), macroBody: $('#macroBody'),
+    pulseCards: $('#pulseCards'), sectorBars: $('#sectorBars'), opsCards: $('#opsCards'), opsUpdated: $('#opsUpdated'), metarList: $('#metarList'), newsList: $('#newsList'), newsUpdated: $('#newsUpdated'), toast: $('#toast'), workerCode: $('#workerCode'), copyWorkerBtn: $('#copyWorkerBtn')
+  };
+
+  const state = {stocks:[], macros:[], jetFuel:null, opensky:null, metars:[], news:[], sourceResults:{}, errors:[], lastUpdate:null, fromCache:false, activeFilter:'Alle', query:''};
+  let refreshTimer = null;
+  let settings = loadSettings();
+
+  function nowISO(){ return new Date().toISOString(); }
+  function fmtTime(v){ if(!v) return '–'; const d = new Date(v); return Number.isNaN(+d) ? '–' : timeFmt.format(d); }
+  function fmtShort(v){ if(!v) return '–'; const d = new Date(v); return Number.isNaN(+d) ? '–' : shortFmt.format(d); }
+  function safeNum(v){ const n = Number(v); return Number.isFinite(n) ? n : null; }
+  function num(v, fallback='–'){ const n=safeNum(v); return n===null ? fallback : fmt.format(n); }
+  function num4(v, fallback='–'){ const n=safeNum(v); return n===null ? fallback : fmt4.format(n); }
+  function pct(v, fallback='–'){ const n=safeNum(v); return n===null ? fallback : pctFmt.format(n) + '%'; }
+  function cls(v){ const n=safeNum(v); if(n===null) return 'neutral'; if(n>.15) return 'up'; if(n<-.15) return 'down'; return 'neutral'; }
+  function esc(s=''){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+  function toast(msg){ const div=document.createElement('div'); div.textContent=msg; els.toast.appendChild(div); setTimeout(()=>{div.style.opacity='0'; div.style.transform='translateY(8px)'},4200); setTimeout(()=>div.remove(),5100); }
+  function setLoading(on){ document.body.classList.toggle('loading', !!on); els.updateBtn.disabled = !!on; }
+
+  function loadSettings(){
+    try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {proxyUrl:'', theme:'dark'};}catch(e){return {proxyUrl:'', theme:'dark'};}
+  }
+  function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+  function normalizeProxyUrl(v){ return String(v||'').trim().replace(/\/+$/, ''); }
+  function applySettings(){
+    document.body.classList.toggle('light', settings.theme === 'light');
+    els.proxyInput.value = settings.proxyUrl || '';
+    els.proxyHint.innerHTML = settings.proxyUrl ? `Aktiver eigener Proxy: <code>${esc(settings.proxyUrl)}</code>` : 'Kein eigener Proxy gespeichert. Die Seite nutzt öffentliche Fallback-Proxies; das ist okay zum Testen, aber nicht garantiert stabil.';
+  }
+
+  const PUBLIC_PROXIES = [
+    {name:'AllOrigins', build:url=>'https://api.allorigins.win/raw?url=' + encodeURIComponent(url)},
+    {name:'corsproxy.io', build:url=>'https://corsproxy.io/?' + encodeURIComponent(url)},
+    {name:'ThingProxy', build:url=>'https://thingproxy.freeboard.io/fetch/' + url}
+  ];
+
+  function customProxyCandidate(target){
+    const base = normalizeProxyUrl(settings.proxyUrl);
+    if(!base) return null;
+    return {name:'Custom Worker', url: base + (base.includes('?') ? '&url=' : '?url=') + encodeURIComponent(target)};
+  }
+
+  function requestCandidates(target, sourceType){
+    const custom = customProxyCandidate(target);
+    const publicOnes = PUBLIC_PROXIES.map(p => ({name:p.name, url:p.build(target)}));
+    const direct = {name:'direct', url:target};
+    if(sourceType === 'yahoo' || sourceType === 'fred') return [custom, ...publicOnes, direct].filter(Boolean);
+    return [direct, custom, ...publicOnes].filter(Boolean);
+  }
+
+  async function fetchRaw(target, {type='json', source='Quelle', sourceType='generic', timeout=15500}={}){
+    let lastError = null;
+    for(const c of requestCandidates(target, sourceType)){
+      const controller = new AbortController();
+      const timer = setTimeout(()=>controller.abort(), timeout);
+      try{
+        const res = await fetch(c.url, {cache:'no-store', signal:controller.signal, headers:{'Accept': type==='json' ? 'application/json,text/plain,*/*' : 'text/plain,*/*'}});
+        clearTimeout(timer);
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        if(type === 'text') return {data:text, via:c.name, url:c.url};
+        try{return {data:JSON.parse(text), via:c.name, url:c.url};}
+        catch(parseErr){ throw new Error('JSON parse failed via ' + c.name + ': ' + text.slice(0,90).replace(/\s+/g,' ')); }
+      }catch(e){ clearTimeout(timer); lastError = e; }
+    }
+    throw new Error(source + ' nicht erreichbar: ' + (lastError ? lastError.message : 'unbekannt'));
+  }
+
+  function yahooUrl(symbol, range='5d', interval='1d'){
+    return 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(symbol) + '?range=' + encodeURIComponent(range) + '&interval=' + encodeURIComponent(interval) + '&includePrePost=false';
+  }
+
+  async function fetchYahooQuote(item){
+    const {data, via} = await fetchRaw(yahooUrl(item.symbol), {type:'json', source:'Yahoo ' + item.symbol, sourceType:'yahoo'});
+    const result = data?.chart?.result?.[0];
+    if(!result?.meta) throw new Error('Keine Yahoo-Daten für ' + item.symbol);
+    const meta = result.meta;
+    const quote = result.indicators?.quote?.[0] || {};
+    const close = Array.isArray(quote.close) ? quote.close.map(safeNum).filter(v=>v!==null) : [];
+    const price = safeNum(meta.regularMarketPrice) ?? close.at(-1) ?? safeNum(meta.previousClose);
+    const prev = safeNum(meta.chartPreviousClose) ?? safeNum(meta.previousClose) ?? (close.length > 1 ? close.at(-2) : null);
+    const change = price !== null && prev !== null ? price - prev : null;
+    const changePct = change !== null && prev ? change / prev * 100 : null;
+    const marketTime = meta.regularMarketTime ? new Date(meta.regularMarketTime*1000).toISOString() : nowISO();
+    return {...item, ok:true, price, prev, change, changePct, currency:meta.currency||'', exchange:meta.fullExchangeName||meta.exchangeName||'', marketState:meta.marketState||'', marketTime, updatedAt:nowISO(), source:'Yahoo Chart', via, points:close};
+  }
+
+  async function runPool(items, limit, fn){
+    const res = new Array(items.length); let idx = 0;
+    async function worker(){
+      while(idx < items.length){ const i = idx++; try{res[i] = await fn(items[i]);}catch(e){res[i] = {...items[i], ok:false, error:e.message, updatedAt:nowISO(), points:[]};} }
+    }
+    await Promise.all(Array.from({length:Math.min(limit, items.length)}, worker));
+    return res;
+  }
+
+  function parseFredCsv(csv){
+    const rows = csv.trim().split(/\r?\n/).slice(1).map(line => {
+      const [date, val] = line.split(','); const value = safeNum(val); return {date, value};
+    }).filter(r => r.date && r.value !== null);
+    if(rows.length < 2) throw new Error('FRED CSV leer/ungültig');
+    const last = rows.at(-1), prev = rows.at(-2); const change = last.value - prev.value; const changePct = prev.value ? change / prev.value * 100 : null;
+    return {name:'Kerosene-Type Jet Fuel, U.S. Gulf Coast', symbol:'WJFUELUSGULF', value:last.value, prev:prev.value, change, changePct, date:last.date, updatedAt:nowISO(), source:'FRED/EIA', ok:true};
+  }
+  async function fetchJetFuel(){
+    const url = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=WJFUELUSGULF';
+    const {data, via} = await fetchRaw(url, {type:'text', source:'FRED Jet Fuel Proxy', sourceType:'fred'});
+    return {...parseFredCsv(data), via};
+  }
+
+  async function fetchOpenSky(){
+    const box = {lamin:34.5,lomin:-12.5,lamax:72,lomax:35};
+    const url = `https://opensky-network.org/api/states/all?lamin=${box.lamin}&lomin=${box.lomin}&lamax=${box.lamax}&lomax=${box.lomax}`;
+    const {data, via} = await fetchRaw(url, {type:'json', source:'OpenSky', sourceType:'opensky', timeout:17000});
+    const states = Array.isArray(data.states) ? data.states : [];
+    const airborne = states.filter(s => s && s[8] === false);
+    const inDE = airborne.filter(s => Number(s[6])>=47.2 && Number(s[6])<=55.2 && Number(s[5])>=5.5 && Number(s[5])<=15.2).length;
+    const inAT = airborne.filter(s => Number(s[6])>=46.2 && Number(s[6])<=49.2 && Number(s[5])>=9.4 && Number(s[5])<=17.3).length;
+    const topCountries = Object.entries(airborne.reduce((a,s)=>{const c=s[2]||'Unknown'; a[c]=(a[c]||0)+1; return a;},{})).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    return {ok:true,total:states.length,airborne:airborne.length,de:inDE,at:inAT,topCountries,time:data.time ? new Date(data.time*1000).toISOString() : nowISO(),updatedAt:nowISO(),source:'OpenSky',via};
+  }
+
+  async function fetchMetars(){
+    const ids = METAR_AIRPORTS.map(a=>a.id).join(',');
+    const url = 'https://aviationweather.gov/api/data/metar?ids=' + encodeURIComponent(ids) + '&format=json';
+    const {data, via} = await fetchRaw(url, {type:'json', source:'AviationWeather METAR', sourceType:'metar'});
+    const arr = Array.isArray(data) ? data : [];
+    return METAR_AIRPORTS.map(a => {
+      const d = arr.find(x => String(x.icaoId || x.station_id || '').toUpperCase() === a.id);
+      if(!d) return {...a, ok:false, error:'Kein METAR erhalten', updatedAt:nowISO()};
+      return {...a, ok:true, raw:d.rawOb || d.raw_text || '', category:d.flightCategory || d.flight_category || '–', temp:safeNum(d.temp), wind:[d.wdir,d.wspd].filter(v=>v!==undefined&&v!==null&&v!=='').join('°/') || '–', visib:d.visib || d.visibility || '–', obsTime:d.obsTime || d.observation_time || nowISO(), updatedAt:nowISO(), source:'AviationWeather', via};
+    });
+  }
+
+  function hasRejectedScript(text){ return /[\u0370-\u03FF\u0400-\u04FF\u0600-\u06FF\u0590-\u05FF\u3040-\u30FF\u3400-\u9FFF]/.test(String(text||'')); }
+  function allowedArticle(a){
+    const lang = String(a.language || a.lang || '').toLowerCase();
+    const title = String(a.title || '');
+    if(hasRejectedScript(title)) return false;
+    if(lang && !(lang.includes('english') || lang.includes('german') || lang === 'en' || lang === 'de')) return false;
+    return true;
+  }
+  function normalizeLang(lang){
+    const l = String(lang||'').toLowerCase(); if(l.includes('german') || l==='de') return 'DE'; if(l.includes('english') || l==='en') return 'EN'; return 'DE/EN';
+  }
+  async function fetchNewsLang(langName){
+    const baseQ = '(aviation OR airline OR airlines OR aircraft OR Airbus OR Boeing OR Lufthansa OR Fraport OR "Vienna Airport" OR "Flughafen Wien" OR Eurocontrol OR "jet fuel" OR airport) (Germany OR Austria OR Europe OR German OR Austrian)';
+    const query = `${baseQ} sourcelang:${langName}`;
+    const url = 'https://api.gdeltproject.org/api/v2/doc/doc?query=' + encodeURIComponent(query) + '&mode=ArtList&format=json&maxrecords=35&sort=DateDesc&timespan=3days';
+    const {data, via} = await fetchRaw(url, {type:'json', source:'GDELT ' + langName, sourceType:'gdelt'});
+    const articles = Array.isArray(data.articles) ? data.articles : [];
+    return articles.filter(allowedArticle).map(a => ({title:a.title||'Ohne Titel', url:a.url||'#', source:a.domain||a.sourceCommonName||'GDELT', date:a.seendate||a.seendate_date||'', country:a.sourcecountry||'', lang:normalizeLang(a.language), rawLang:a.language||'', via, updatedAt:nowISO()}));
+  }
+  async function fetchNews(){
+    const settled = await Promise.allSettled([fetchNewsLang('English'), fetchNewsLang('German')]);
+    const all = settled.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+    if(!all.length && settled.every(r=>r.status==='rejected')) throw new Error(settled.map(r=>r.reason?.message).join(' | '));
+    const seen = new Set();
+    return all.filter(a => { const key = a.url || a.title; if(seen.has(key)) return false; seen.add(key); return true; }).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,24);
+  }
+
+  function sourceSummary(){
+    const okStocks = state.stocks.filter(x=>x.ok).length, totalStocks = STOCKS.length;
+    const okMacros = state.macros.filter(x=>x.ok).length, totalMacros = MACROS.length;
+    return {
+      Yahoo: {ok: okStocks + okMacros, total: totalStocks + totalMacros, detail:`${okStocks}/${totalStocks} Aktien · ${okMacros}/${totalMacros} Makro`},
+      FRED: {ok: state.jetFuel?.ok ? 1 : 0, total:1, detail: state.jetFuel?.ok ? `Jet-Fuel-Proxy ${state.jetFuel.via}` : 'nicht geladen'},
+      OpenSky: {ok: state.opensky?.ok ? 1 : 0, total:1, detail: state.opensky?.ok ? `${state.opensky.airborne} airborne · ${state.opensky.via}` : 'nicht geladen'},
+      METAR: {ok: state.metars.filter(x=>x.ok).length, total: METAR_AIRPORTS.length, detail:`${state.metars.filter(x=>x.ok).length}/${METAR_AIRPORTS.length} Airports`},
+      GDELT: {ok: state.news.length ? 1 : 0, total:1, detail: state.news.length ? `${state.news.length} DE/EN News` : 'keine News'}
+    };
+  }
+
+  function saveCache(){ try{localStorage.setItem(CACHE_KEY, JSON.stringify({...state, savedAt:nowISO()}));}catch(e){} }
+  function loadCache(){ try{const raw=localStorage.getItem(CACHE_KEY); if(!raw) return false; Object.assign(state, JSON.parse(raw), {fromCache:true}); renderAll(); return true;}catch(e){return false;} }
+
+  async function updateDashboard(manual=false){
+    setLoading(true); state.errors=[]; state.fromCache=false;
+    try{
+      const [stocks, macros, jet, sky, metars, news] = await Promise.allSettled([
+        runPool(STOCKS, 3, fetchYahooQuote), runPool(MACROS, 2, fetchYahooQuote), fetchJetFuel(), fetchOpenSky(), fetchMetars(), fetchNews()
+      ]);
+      if(stocks.status==='fulfilled') state.stocks = stocks.value; else state.errors.push(stocks.reason.message);
+      if(macros.status==='fulfilled') state.macros = macros.value; else state.errors.push(macros.reason.message);
+      if(jet.status==='fulfilled') state.jetFuel = jet.value; else state.errors.push(jet.reason.message);
+      if(sky.status==='fulfilled') state.opensky = sky.value; else state.errors.push(sky.reason.message);
+      if(metars.status==='fulfilled') state.metars = metars.value; else state.errors.push(metars.reason.message);
+      if(news.status==='fulfilled') state.news = news.value; else state.errors.push(news.reason.message);
+
+      const anyLive = state.stocks.some(x=>x.ok) || state.macros.some(x=>x.ok) || state.jetFuel?.ok || state.opensky?.ok || state.metars.some(x=>x.ok) || state.news.length;
+      if(!anyLive){
+        const hadCache = loadCache();
+        if(hadCache) toast('Live-Abfrage blockiert. Zeige gespeicherten Cache.');
+        else throw new Error('Keine Live-Quelle erreichbar. Prüfe Internet/CORS/Proxy.');
+      } else {
+        state.lastUpdate = nowISO(); saveCache(); renderAll(); if(manual) toast('Update abgeschlossen.');
+      }
+    }catch(e){
+      state.errors.push(e.message); const cached = loadCache(); if(!cached){ renderAll(); toast('Update fehlgeschlagen: ' + e.message); }
+    }finally{ setLoading(false); }
+  }
+
+  function avgPct(items, filter=()=>true){ const vals=items.filter(x=>x.ok && filter(x) && safeNum(x.changePct)!==null).map(x=>x.changePct); return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null; }
+  function renderKPIs(){
+    const okEquity = state.stocks.filter(x=>x.ok).length;
+    const airlineAvg = avgPct(state.stocks, x=>x.segment==='Airline');
+    const deAtAvg = avgPct(state.stocks, x=>x.focus==='Deutschland' || x.focus==='Österreich');
+    const supplierAvg = avgPct(state.stocks, x=>x.segment==='Supplier' || x.segment==='OEM');
+    const eurusd = state.macros.find(x=>x.symbol==='EURUSD=X');
+    const brent = state.macros.find(x=>x.symbol==='BZ=F');
+    const kpis = [
+      ['Equity Live', `${okEquity}/${STOCKS.length}`, 'geladene Yahoo-Werte', okEquity ? 'good':'warn'],
+      ['Airline Basket', pct(airlineAvg), 'Ø Airlines Europa', cls(airlineAvg)],
+      ['DE/AT Fokus', pct(deAtAvg), 'Lufthansa, Fraport, Wien, MTU', cls(deAtAvg)],
+      ['OEM/Supplier', pct(supplierAvg), 'Airbus/Boeing/Engines', cls(supplierAvg)],
+      ['Brent', brent ? num(brent.price) : '–', brent ? pct(brent.changePct) : 'Fuel proxy', brent ? cls(brent.changePct):'neutral'],
+      ['EUR/USD', eurusd ? num4(eurusd.price) : '–', eurusd ? pct(eurusd.changePct) : 'FX', eurusd ? cls(eurusd.changePct):'neutral']
+    ];
+    els.kpiArea.innerHTML = kpis.map(k => `<div class="kpi"><div class="name">${esc(k[0])}</div><div class="val ${k[3]}">${esc(k[1])}</div><div class="sub">${esc(k[2])}</div></div>`).join('');
+  }
+  function spark(points){
+    if(!points || points.length < 2) return '<svg class="spark"></svg>';
+    const min=Math.min(...points), max=Math.max(...points), span=max-min || 1; const w=118,h=38,pad=4;
+    const d = points.map((v,i)=>`${i?'L':'M'} ${pad+i*(w-pad*2)/(points.length-1)} ${h-pad-(v-min)*(h-pad*2)/span}`).join(' ');
+    const color = points.at(-1) >= points[0] ? 'var(--good)' : 'var(--bad)';
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}"><path d="${d}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/><path d="${d} L ${w-pad} ${h-pad} L ${pad} ${h-pad} Z" fill="${color}" opacity=".08"/></svg>`;
+  }
+  function renderFilters(){
+    const cats = ['Alle', ...Array.from(new Set(STOCKS.map(x=>x.segment))), 'Deutschland', 'Österreich'];
+    els.filters.innerHTML = cats.map(c => `<span class="pill ${state.activeFilter===c?'active':''}" data-filter="${esc(c)}">${esc(c)}</span>`).join('');
+    els.filters.querySelectorAll('.pill').forEach(p => p.onclick = () => {state.activeFilter=p.dataset.filter; renderStocks(); renderFilters();});
+  }
+  function filteredStocks(){
+    const q = state.query.trim().toLowerCase();
+    return state.stocks.filter(x => {
+      const f = state.activeFilter;
+      const inFilter = f==='Alle' || x.segment===f || x.focus===f;
+      const hay = `${x.symbol} ${x.name} ${x.segment} ${x.focus} ${x.aliases}`.toLowerCase();
+      return inFilter && (!q || hay.includes(q));
+    });
+  }
+  function renderStocks(){
+    const rows = filteredStocks();
+    els.equityCount.textContent = `${state.stocks.filter(x=>x.ok).length}/${STOCKS.length} live`;
+    const latest = state.stocks.filter(x=>x.ok).map(x=>x.updatedAt).sort().at(-1);
+    els.lastStockUpdate.textContent = latest ? `Letztes Aktien-Update: ${fmtTime(latest)} · Proxy: ${settings.proxyUrl ? 'eigener Worker aktiv' : 'öffentliche Fallbacks / direct'}` : 'Noch keine Aktien geladen.';
+    if(!rows.length){els.stockBody.innerHTML='<tr><td colspan="8"><div class="empty">Keine passenden Werte oder Yahoo blockiert. Proxy prüfen.</div></td></tr>'; return;}
+    els.stockBody.innerHTML = rows.map(x => `<tr>
+      <td><div class="company"><div class="avatar">${esc((x.name||x.symbol).slice(0,2).toUpperCase())}</div><div><b>${esc(x.name)}</b><div class="small">${esc(x.symbol)} · ${esc(x.exchange||'')}</div></div></div></td>
+      <td><span class="tag">${esc(x.focus)}</span></td><td><span class="tag">${esc(x.segment)}</span></td>
+      <td><b>${x.ok ? `${num(x.price)} ${esc(x.currency||'')}` : '–'}</b><div class="small">${x.ok ? fmtShort(x.marketTime) : esc(x.error||'Fehler')}</div></td>
+      <td class="${cls(x.changePct)}"><b>${x.ok ? pct(x.changePct) : '–'}</b><div class="small">${x.ok ? num(x.change) : ''}</div></td>
+      <td>${spark(x.points)}</td><td><span class="tag">${esc(x.via || '–')}</span></td>
+      <td>${x.ok ? '<span class="badge ok"><span class="led"></span>Live</span>' : '<span class="badge fail"><span class="led"></span>Fehler</span>'}</td>
+    </tr>`).join('');
+  }
+  function renderTicker(){
+    const items = [...state.stocks.filter(x=>x.ok), ...state.macros.filter(x=>x.ok)].slice(0,34);
+    if(!items.length){els.tickerTrack.innerHTML='<div class="tickerItem">Noch keine Live-Daten</div>';return;}
+    const html = items.map(x => `<div class="tickerItem"><b>${esc(x.symbol)}</b><span>${num(x.price)}</span><span class="${cls(x.changePct)}">${pct(x.changePct)}</span></div>`).join('');
+    els.tickerTrack.innerHTML = html + html;
+  }
+  function renderFuel(){
+    const brent=state.macros.find(x=>x.symbol==='BZ=F'), wti=state.macros.find(x=>x.symbol==='CL=F'), ho=state.macros.find(x=>x.symbol==='HO=F'), eurusd=state.macros.find(x=>x.symbol==='EURUSD=X'), jet=state.jetFuel;
+    els.fuelUpdated.textContent = `Update: ${fmtTime((jet&&jet.updatedAt) || (brent&&brent.updatedAt))} · Jet-A1 als Proxy/Benchmark, nicht als exakter europäischer Spotpreis.`;
+    const cards = [
+      ['Jet Fuel Proxy', jet ? num(jet.value) : '–', jet ? `USD/gal · ${pct(jet.changePct)} · ${jet.date}` : 'FRED/EIA blockiert', jet?cls(jet.changePct):'neutral'],
+      ['Heating Oil', ho ? num(ho.price) : '–', ho ? `${esc(ho.currency||'USD')} · ${pct(ho.changePct)}` : 'Yahoo', ho?cls(ho.changePct):'neutral'],
+      ['Brent', brent ? num(brent.price) : '–', brent ? `${esc(brent.currency||'USD')} · ${pct(brent.changePct)}` : 'Yahoo', brent?cls(brent.changePct):'neutral'],
+      ['EUR/USD', eurusd ? num4(eurusd.price) : '–', eurusd ? pct(eurusd.changePct) : 'Yahoo', eurusd?cls(eurusd.changePct):'neutral']
+    ];
+    els.fuelCards.innerHTML = cards.map(c=>`<div class="mini"><div class="name">${esc(c[0])}</div><div class="num ${c[3]}">${esc(c[1])}</div><div class="desc">${esc(c[2])}</div></div>`).join('');
+    const rows=[];
+    if(jet) rows.push({name:jet.name,value:`${num(jet.value)} USD/gal`,change:pct(jet.changePct),cls:cls(jet.changePct),date:jet.date,source:`FRED/EIA · ${jet.via}`});
+    state.macros.forEach(x => rows.push({name:x.name,value:`${x.symbol.includes('=X')?num4(x.price):num(x.price)} ${x.currency||x.unit||''}`,change:pct(x.changePct),cls:cls(x.changePct),date:fmtShort(x.marketTime||x.updatedAt),source:`Yahoo · ${x.via||''}`}));
+    els.macroBody.innerHTML = rows.length ? rows.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${esc(r.value)}</td><td class="${r.cls}"><b>${esc(r.change)}</b></td><td>${esc(r.date)}</td><td><span class="tag">${esc(r.source)}</span></td></tr>`).join('') : '<tr><td colspan="5"><div class="empty">Keine Macro/Fuel-Daten geladen.</div></td></tr>';
+  }
+  function renderPulse(){
+    const groups = ['Airline','OEM','Supplier','Airport'];
+    const avgs = groups.map(g=>({g, v:avgPct(state.stocks,x=>x.segment===g), n:state.stocks.filter(x=>x.ok&&x.segment===g).length}));
+    const best = state.stocks.filter(x=>x.ok&&safeNum(x.changePct)!==null).sort((a,b)=>b.changePct-a.changePct)[0];
+    const worst = state.stocks.filter(x=>x.ok&&safeNum(x.changePct)!==null).sort((a,b)=>a.changePct-b.changePct)[0];
+    els.pulseCards.innerHTML = [
+      ['Top Mover', best ? best.name : '–', best ? pct(best.changePct) : '–', best?cls(best.changePct):'neutral'],
+      ['Weakest', worst ? worst.name : '–', worst ? pct(worst.changePct) : '–', worst?cls(worst.changePct):'neutral']
+    ].map(c=>`<div class="mini"><div class="name">${esc(c[0])}</div><div class="num ${c[3]}" style="font-size:20px">${esc(c[1])}</div><div class="desc">${esc(c[2])}</div></div>`).join('');
+    els.sectorBars.innerHTML = avgs.map(x => { const width = x.v===null ? 50 : Math.max(0, Math.min(100, 50 + x.v*9)); return `<div class="barrow"><div class="barlabel">${esc(x.g)} · ${x.n}</div><div class="bartrack"><div class="barfill" style="width:${width}%"></div></div><b class="${cls(x.v)}">${pct(x.v)}</b></div>`; }).join('');
+  }
+  function renderOps(){
+    const sky=state.opensky;
+    els.opsUpdated.textContent = `Update: ${fmtTime((sky&&sky.updatedAt) || (state.metars.find(x=>x.ok)||{}).updatedAt)} · OpenSky kann unauthentifiziert rate-limitiert sein.`;
+    const ops = [
+      ['Europa airborne', sky ? String(sky.airborne) : '–', sky ? `via ${sky.via}` : 'OpenSky nicht geladen'],
+      ['Deutschland Box', sky ? String(sky.de) : '–', 'Flüge im groben DE-Bounding-Box'],
+      ['Österreich Box', sky ? String(sky.at) : '–', 'Flüge im groben AT-Bounding-Box']
+    ];
+    els.opsCards.innerHTML = ops.map(o=>`<div class="mini"><div class="name">${esc(o[0])}</div><div class="num">${esc(o[1])}</div><div class="desc">${esc(o[2])}</div></div>`).join('');
+    const metars = state.metars;
+    els.metarList.innerHTML = metars.length ? metars.map(m => `<div class="metar"><div class="metarTop"><b>${esc(m.id)} · ${esc(m.name)}</b><span class="tag">${m.ok?esc(m.category):'Fehler'}</span></div>${m.ok ? `<div class="small">Temp: ${num(m.temp)} °C · Wind: ${esc(m.wind)} kt · Sicht: ${esc(m.visib)}</div><div class="raw">${esc(m.raw)}</div>` : `<div class="small bad">${esc(m.error||'Nicht geladen')}</div>`}</div>`).join('') : '<div class="empty">Noch keine METAR-Daten.</div>';
+  }
+  function renderNews(){
+    els.newsUpdated.textContent = `Update: ${fmtTime((state.news[0]||{}).updatedAt)} · Nur Artikel mit Sprache Deutsch/Englisch und ohne kyrillische/griechische Schrift.`;
+    els.newsList.innerHTML = state.news.length ? state.news.map(a => `<article class="newsItem"><a class="newsTitle" target="_blank" rel="noreferrer" href="${esc(a.url)}">${esc(a.title)}</a><div class="newsMeta"><span class="tag">${esc(a.lang)}</span> ${esc(a.source)} · ${esc(a.country||'')} · ${esc(a.date||'')} · via ${esc(a.via||'')}</div></article>`).join('') : '<div class="empty">Keine DE/EN-News geladen. GDELT kann kurzzeitig leer sein oder blockiert werden.</div>';
+  }
+  function renderSources(){
+    const s = sourceSummary();
+    els.sourceStatus.innerHTML = Object.entries(s).map(([name, v]) => {
+      const status = v.ok === v.total ? 'ok' : (v.ok>0 ? 'partial':'fail');
+      const label = v.ok === v.total ? 'OK' : (v.ok>0 ? 'Teilweise':'Fehler');
+      return `<div class="sourceRow ${status}"><div class="badge"><span class="led"></span><b>${esc(name)}</b></div><div>${esc(v.detail)}</div><div class="small" style="text-align:right">${label}</div></div>`;
+    }).join('') + (state.errors.length ? `<div class="empty" style="text-align:left"><b>Fehlerlog:</b><br>${state.errors.slice(0,7).map(esc).join('<br>')}</div>` : '');
+    const totalOk = Object.values(s).reduce((a,v)=>a+v.ok,0), total = Object.values(s).reduce((a,v)=>a+v.total,0);
+    els.dataStatus.textContent = totalOk === total ? 'Alle Quellen OK' : totalOk ? 'Teilweise live' : 'Nicht verbunden';
+    els.dataStatus.className = 'big ' + (totalOk === total ? 'good' : totalOk ? 'warn' : 'bad');
+    els.dataStatusSub.textContent = `${totalOk}/${total} Teilquellen verfügbar` + (settings.proxyUrl ? ' · eigener Proxy aktiv' : ' · kein eigener Proxy');
+  }
+  function renderGlobal(){
+    els.globalUpdate.textContent = state.lastUpdate ? fmtTime(state.lastUpdate) : 'Noch kein Update';
+    els.globalUpdateSub.textContent = state.fromCache ? 'Anzeige aus lokalem Cache, weil Live-Abruf nicht vollständig ging.' : (state.lastUpdate ? 'Live-Abruf abgeschlossen. Einzelne Quellen können trotzdem verzögert sein.' : 'Noch keine Daten geladen.');
+  }
+  function renderAll(){ renderGlobal(); renderKPIs(); renderTicker(); renderFilters(); renderStocks(); renderFuel(); renderPulse(); renderOps(); renderNews(); renderSources(); }
+
+  function setupAutoRefresh(){
+    clearInterval(refreshTimer); const ms = Number(els.refreshSelect.value || 0); if(ms>0) refreshTimer = setInterval(()=>updateDashboard(false), ms);
+  }
+
+  const WORKER_CODE = `export default {
+  async fetch(request) {
+    const url = new URL(request.url);
+    const target = url.searchParams.get("url");
+
+    const cors = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Accept",
+      "Access-Control-Max-Age": "86400"
+    };
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers: cors });
+    }
+    if (!target) {
+      return new Response("Missing ?url=", { status: 400, headers: cors });
+    }
+
+    let targetUrl;
+    try {
+      targetUrl = new URL(target);
+    } catch (_) {
+      return new Response("Invalid target URL", { status: 400, headers: cors });
+    }
+
+    const allowed = new Set([
+      "query1.finance.yahoo.com",
+      "query2.finance.yahoo.com",
+      "fred.stlouisfed.org",
+      "opensky-network.org",
+      "aviationweather.gov",
+      "api.gdeltproject.org"
+    ]);
+
+    if (!allowed.has(targetUrl.hostname)) {
+      return new Response("Domain not allowed: " + targetUrl.hostname, { status: 403, headers: cors });
+    }
+
+    const upstream = await fetch(targetUrl.toString(), {
+      method: "GET",
+      headers: { "User-Agent": "Mozilla/5.0 AviationDashboard/1.0", "Accept": "application/json,text/plain,*/*" }
+    });
+
+    const responseHeaders = new Headers(upstream.headers);
+    Object.entries(cors).forEach(([k, v]) => responseHeaders.set(k, v));
+    responseHeaders.set("Cache-Control", "public, max-age=60");
+
+    return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+  }
+};`;
+
+  function init(){
+    applySettings(); els.workerCode.textContent = WORKER_CODE;
+    els.updateBtn.onclick = () => updateDashboard(true);
+    els.themeBtn.onclick = () => { settings.theme = settings.theme === 'light' ? 'dark' : 'light'; saveSettings(); applySettings(); };
+    els.refreshSelect.onchange = setupAutoRefresh;
+    els.clearCacheBtn.onclick = () => { localStorage.removeItem(CACHE_KEY); toast('Cache gelöscht.'); };
+    els.searchInput.oninput = e => { state.query = e.target.value; renderStocks(); };
+    els.saveProxyBtn.onclick = () => { settings.proxyUrl = normalizeProxyUrl(els.proxyInput.value); saveSettings(); applySettings(); toast(settings.proxyUrl ? 'Proxy gespeichert.' : 'Proxy entfernt.'); };
+    els.copyWorkerBtn.onclick = async () => { try{ await navigator.clipboard.writeText(WORKER_CODE); toast('Worker-Code kopiert.'); }catch(e){ toast('Kopieren nicht möglich; Code manuell markieren.'); } };
+    renderAll(); loadCache(); setupAutoRefresh(); updateDashboard(false);
+  }
+  init();
+})();
+</script>
+</body>
+</html>
