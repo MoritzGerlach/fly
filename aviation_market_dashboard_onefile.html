@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aviation Market Dashboard – Europe / DE / AT</title>
+  <meta name="description" content="Interaktives Marktüberblick-Dashboard für Luftfahrt in Europa mit Fokus Deutschland und Österreich." />
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#07101b;--bg2:#101b2b;--panel:rgba(15,28,48,.78);--panelSolid:#101b2b;--soft:rgba(255,255,255,.055);--soft2:rgba(255,255,255,.085);--line:rgba(255,255,255,.115);
+      --text:#eef6ff;--muted:#9badc2;--muted2:#708298;--good:#42e6a5;--bad:#ff6678;--warn:#ffd166;--blue:#78a6ff;--cyan:#55e9ff;--violet:#b68cff;
+      --shadow:0 24px 80px rgba(0,0,0,.36);--radius:24px;--radius2:18px;
+    }
+    body.light{color-scheme:light;--bg:#edf4fb;--bg2:#fbfdff;--panel:rgba(255,255,255,.84);--panelSolid:#ffffff;--soft:rgba(13,28,48,.045);--soft2:rgba(13,28,48,.07);--line:rgba(13,28,48,.13);--text:#102033;--muted:#647589;--muted2:#8795a7;--shadow:0 18px 55px rgba(18,39,72,.13)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 10% -5%,rgba(85,233,255,.18),transparent 32%),radial-gradient(circle at 88% 4%,rgba(182,140,255,.18),transparent 30%),radial-gradient(circle at 52% 112%,rgba(66,230,165,.10),transparent 35%),linear-gradient(135deg,var(--bg),var(--bg2) 65%,#07101a);overflow-x:hidden}body.light{background:radial-gradient(circle at 12% 0%,rgba(85,150,255,.18),transparent 31%),radial-gradient(circle at 88% 4%,rgba(182,140,255,.14),transparent 30%),linear-gradient(135deg,var(--bg),var(--bg2))}
+    body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.14;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E")}
+    .wrap{max-width:1500px;margin:0 auto;padding:18px 18px 40px}.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0 15px;backdrop-filter:blur(18px)}
+    .brand{display:flex;align-items:center;gap:13px;min-width:285px}.logo{width:54px;height:54px;border-radius:18px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(135deg,rgba(85,233,255,.22),rgba(120,166,255,.14));box-shadow:var(--shadow);overflow:hidden}.logo svg{width:34px;height:34px}.brand h1{font-size:18px;line-height:1.05;margin:0;letter-spacing:.1px}.brand small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.controls{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+    button,select,input{color:var(--text);background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:10px 12px;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}button{font-weight:850;cursor:pointer;transition:.18s transform,.18s background,.18s border-color}button:hover{transform:translateY(-1px);background:rgba(120,166,255,.14);border-color:rgba(120,166,255,.42)}button:disabled{opacity:.58;cursor:not-allowed;transform:none}.primary{background:linear-gradient(135deg,rgba(85,233,255,.25),rgba(120,166,255,.25));border-color:rgba(85,233,255,.38)}select option{background:#101b2c;color:#fff}.loader{display:none;align-items:center;gap:8px;color:var(--muted);font-size:12px}.loading .loader{display:flex}.spinner{width:14px;height:14px;border-radius:99px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--cyan);animation:spin .9s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .hero{display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.panel,.heroMain{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(18px)}.heroMain{padding:30px}.panel:after,.heroMain:after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent 24%,transparent 78%,rgba(85,233,255,.08));mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);mask-composite:exclude;padding:1px}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:rgba(66,230,165,.10);border:1px solid rgba(66,230,165,.25);color:var(--good);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.24px}.dot{width:8px;height:8px;border-radius:99px;background:var(--good);box-shadow:0 0 0 6px rgba(66,230,165,.13)}
+    .hero h2{font-size:clamp(34px,5.1vw,72px);line-height:.93;letter-spacing:-2.8px;margin:19px 0 13px}.hero h2 span{background:linear-gradient(90deg,var(--cyan),var(--blue),var(--violet));-webkit-background-clip:text;color:transparent}.hero p{margin:0;max-width:860px;color:var(--muted);font-size:15px;line-height:1.62}.side{display:grid;gap:14px;padding:16px}.status{padding:17px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(135deg,var(--soft2),var(--soft))}.status .label{color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.22px}.status .big{font-size:22px;font-weight:950;letter-spacing:-.5px;margin-top:8px}.status .sub{color:var(--muted);font-size:12px;line-height:1.4;margin-top:6px}.good{color:var(--good)!important}.bad{color:var(--bad)!important}.warn{color:var(--warn)!important}.muted{color:var(--muted)!important}.up{color:var(--good)!important}.down{color:var(--bad)!important}.neutral{color:var(--muted)!important}.small{font-size:12px;color:var(--muted)}
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin:18px 0}.kpi{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;min-height:124px;backdrop-filter:blur(18px)}.kpi:before{content:"";position:absolute;width:122px;height:122px;border-radius:999px;right:-52px;top:-52px;background:rgba(85,233,255,.09)}.kpi .name{font-size:11px;text-transform:uppercase;letter-spacing:.25px;color:var(--muted);font-weight:950}.kpi .val{font-size:27px;font-weight:950;letter-spacing:-.8px;margin:12px 0 5px}.kpi .sub{font-size:12px;line-height:1.35;color:var(--muted)}
+    .ticker{margin:18px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--soft)}.tickerTrack{display:flex;width:max-content;gap:10px;padding:10px;animation:marquee 60s linear infinite}.ticker:hover .tickerTrack{animation-play-state:paused}@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}.tickerItem{white-space:nowrap;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--soft);border-radius:14px;padding:8px 12px;font-size:12px}.tag{font-size:11px;color:var(--muted);padding:5px 8px;border-radius:999px;border:1px solid var(--line);background:var(--soft);white-space:nowrap}.grid{display:grid;grid-template-columns:1.22fr .78fr;gap:18px;align-items:start}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.panel{padding:18px}.head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.head h3{font-size:18px;margin:0;letter-spacing:-.2px}.hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.42}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 14px}.pill{font-size:12px;color:var(--muted);border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:7px 10px;cursor:pointer;user-select:none}.pill.active{color:var(--text);background:rgba(85,233,255,.14);border-color:rgba(85,233,255,.34)}.search{min-width:230px;flex:1}
+    .tableWrap{overflow:auto;border:1px solid var(--line);border-radius:18px}table{width:100%;border-collapse:collapse;min-width:900px;background:rgba(0,0,0,.035)}th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle;font-size:13px}th{position:sticky;top:0;z-index:3;background:rgba(10,22,39,.93);backdrop-filter:blur(14px);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.3px}body.light th{background:rgba(255,255,255,.94)}tr:hover td{background:rgba(120,166,255,.06)}.company{display:flex;align-items:center;gap:10px}.avatar{width:36px;height:36px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;font-weight:950;background:linear-gradient(135deg,rgba(85,233,255,.16),rgba(182,140,255,.14))}.miniGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.mini{padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--soft)}.mini .name{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.25px;font-weight:950}.mini .num{font-size:24px;font-weight:950;letter-spacing:-.6px;margin-top:8px}.mini .desc{color:var(--muted);font-size:12px;line-height:1.35;margin-top:4px}.barArea{display:grid;gap:10px;margin-top:12px}.barrow{display:grid;grid-template-columns:122px 1fr 58px;gap:9px;align-items:center;font-size:12px}.barlabel{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bartrack{height:11px;border-radius:999px;border:1px solid var(--line);background:var(--soft2);overflow:hidden}.barfill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--bad),var(--warn),var(--good));width:50%}.opsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metarList{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}.metar{padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--soft)}.metarTop{display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:6px}.raw{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px;color:var(--muted);line-height:1.45;margin-top:6px;word-break:break-word}.empty{border:1px dashed var(--line);border-radius:18px;color:var(--muted);padding:16px;text-align:center;font-size:13px}.foot{margin-top:23px;text-align:center;color:var(--muted2);font-size:12px;line-height:1.5}.toast{position:fixed;right:20px;bottom:20px;z-index:60;display:grid;gap:8px;max-width:430px}.toast div{padding:12px 14px;border-radius:16px;background:rgba(8,18,31,.95);border:1px solid var(--line);box-shadow:var(--shadow);font-size:13px}
+    @media(max-width:1150px){.hero,.grid,.two{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.wrap{padding:14px 12px 32px}.top{align-items:flex-start}.brand{min-width:0}.controls{justify-content:flex-start}.kpis{grid-template-columns:1fr 1fr}.miniGrid,.opsGrid,.metarList{grid-template-columns:1fr}.hero h2{letter-spacing:-1.6px}.search{min-width:100%}th,td{padding:11px 10px}.heroMain{padding:22px}.status .big{font-size:20px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 37.5 55 14c2.7-1.4 5.5 1.5 4 4.1L35 60.5c-1.1 2-4.1 1.4-4.4-.8l-2.4-17.9-17.7-1.9c-2.3-.3-2.7-3.3-.5-4.4Z" fill="url(#g)"/><path d="M28.2 41.8 55 14 32.3 45.7" stroke="white" stroke-opacity=".74" stroke-width="3" stroke-linecap="round"/><defs><linearGradient id="g" x1="8" y1="45" x2="58" y2="14" gradientUnits="userSpaceOnUse"><stop stop-color="#55e9ff"/><stop offset=".55" stop-color="#78a6ff"/><stop offset="1" stop-color="#b68cff"/></linearGradient></defs></svg></div>
+        <div><h1>Aviation Market Dashboard</h1><small>Europa · Deutschland · Österreich</small></div>
+      </div>
+      <div class="controls">
+        <div class="loader"><span class="spinner"></span><span>Update läuft</span></div>
+        <select id="refreshSelect" title="Auto-Refresh">
+          <option value="0">Auto: aus</option><option value="300000">Auto: 5 Min.</option><option value="900000" selected>Auto: 15 Min.</option><option value="1800000">Auto: 30 Min.</option><option value="3600000">Auto: 60 Min.</option>
+        </select>
+        <button id="themeBtn">Light/Dark</button>
+        <button class="primary" id="updateBtn">Jetzt aktualisieren</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="heroMain">
+        <div class="eyebrow"><span class="dot"></span><span id="liveLabel">Marktüberblick</span></div>
+        <h2>European Aviation <span>Market Pulse</span></h2>
+        <p>Aktien, Fuel-Indikatoren, FX, europäische Luftfahrtwerte und operative Lage für einen schnellen Überblick über Airlines, Hersteller, Zulieferer und Flughäfen mit Fokus auf Deutschland und Österreich.</p>
+      </div>
+      <aside class="panel side">
+        <div class="status"><div class="label">Letztes Update</div><div class="big" id="globalUpdate">Noch kein Update</div><div class="sub" id="globalUpdateSub">Beim Öffnen wird automatisch aktualisiert.</div></div>
+        <div class="status"><div class="label">Datenlage</div><div class="big" id="dataStatus">Initialisierung</div><div class="sub" id="dataStatusSub">Live-Daten werden geladen.</div></div>
+        <div class="status"><div class="label">Fokus</div><div class="big">DE / AT / Europe</div><div class="sub">Airlines · OEM · Airports · Suppliers · Fuel · FX</div></div>
+      </aside>
+    </section>
+
+    <section class="kpis" id="kpiArea"></section>
+    <section class="ticker"><div class="tickerTrack" id="tickerTrack"></div></section>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="head"><div><h3>Market Watchlist</h3><div class="hint" id="lastStockUpdate">Letztes Aktien-Update: –</div></div><span class="tag" id="equityCount">0 Werte</span></div>
+        <div class="toolbar"><div id="filters"></div><input id="searchInput" class="search" placeholder="Suche nach Unternehmen, Segment, Land …" /></div>
+        <div class="tableWrap">
+          <table>
+            <thead><tr><th>Unternehmen</th><th>Segment</th><th>Fokus</th><th>Kurs</th><th>Tag</th><th>Volumen</th><th>Zeit</th><th>Markt</th></tr></thead>
+            <tbody id="stockBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><h3>Market Pulse</h3><div class="hint">Durchschnittliche Tagesbewegung nach Segment.</div></div></div>
+        <div class="miniGrid" id="pulseCards"></div>
+        <div class="barArea" id="sectorBars"></div>
+      </section>
+    </main>
+
+    <section class="two">
+      <section class="panel">
+        <div class="head"><div><h3>Fuel, FX & Benchmarks</h3><div class="hint" id="fuelUpdated">Update: –</div></div></div>
+        <div class="miniGrid" id="fuelCards"></div>
+        <div class="tableWrap" style="margin-top:12px">
+          <table style="min-width:640px">
+            <thead><tr><th>Indikator</th><th>Wert</th><th>Tag</th><th>Zeit</th></tr></thead>
+            <tbody id="macroBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head"><div><h3>Operations & Airport Weather</h3><div class="hint" id="opsUpdated">Update: –</div></div></div>
+        <div class="opsGrid" id="opsCards"></div>
+        <div class="metarList" id="metarList"></div>
+      </section>
+    </section>
+
+    <div class="foot">Marktdaten können börsen- und quellenbedingt verzögert sein. Dieses Dashboard ist ein Marktüberblick und keine Anlageberatung.</div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const STOCKS = [
+    {symbol:'AIR.PA', name:'Airbus', segment:'OEM', focus:'Europa', aliases:'airbus aircraft oem manufacturer germany france europe'},
+    {symbol:'BA', name:'Boeing', segment:'OEM', focus:'Global', aliases:'boeing aircraft oem usa'},
+    {symbol:'LHA.DE', name:'Lufthansa Group', segment:'Airline', focus:'Deutschland', aliases:'lufthansa austrian swiss eurowings airline germany austria'},
+    {symbol:'FRA.DE', name:'Fraport', segment:'Airport', focus:'Deutschland', aliases:'frankfurt airport flughafen deutschland'},
+    {symbol:'FLU.VI', name:'Flughafen Wien', segment:'Airport', focus:'Österreich', aliases:'vienna airport wien österreich austria'},
+    {symbol:'MTX.DE', name:'MTU Aero Engines', segment:'Supplier', focus:'Deutschland', aliases:'mtu engines aerospace supplier deutschland'},
+    {symbol:'SAF.PA', name:'Safran', segment:'Supplier', focus:'Europa', aliases:'safran engines aerospace supplier france'},
+    {symbol:'RR.L', name:'Rolls-Royce', segment:'Supplier', focus:'Europa', aliases:'rolls royce engines aerospace uk'},
+    {symbol:'RYAAY', name:'Ryanair Holdings ADR', segment:'Airline', focus:'Europa', aliases:'ryanair low cost airline europe'},
+    {symbol:'IAG.L', name:'IAG', segment:'Airline', focus:'Europa', aliases:'british airways iberia aer lingus airline'},
+    {symbol:'AF.PA', name:'Air France-KLM', segment:'Airline', focus:'Europa', aliases:'air france klm airline europe'},
+    {symbol:'EZJ.L', name:'easyJet', segment:'Airline', focus:'Europa', aliases:'easyjet airline low cost'},
+    {symbol:'WIZZ.L', name:'Wizz Air', segment:'Airline', focus:'Europa', aliases:'wizz air airline low cost'},
+    {symbol:'ADP.PA', name:'Groupe ADP', segment:'Airport', focus:'Europa', aliases:'paris airport aeroport de paris'},
+    {symbol:'AENA.MC', name:'Aena', segment:'Airport', focus:'Europa', aliases:'aena airport spain'},
+    {symbol:'HO.PA', name:'Thales', segment:'Supplier', focus:'Europa', aliases:'thales avionics aerospace defense'},
+    {symbol:'LDO.MI', name:'Leonardo', segment:'Supplier', focus:'Europa', aliases:'leonardo aerospace defense italy'},
+    {symbol:'GE', name:'GE Aerospace', segment:'Supplier', focus:'Global', aliases:'ge aerospace engines'},
+    {symbol:'RTX', name:'RTX', segment:'Supplier', focus:'Global', aliases:'rtx pratt whitney aerospace'}
+  ];
+
+  const MACROS = [
+    {symbol:'BZ=F', name:'Brent Crude', unit:'USD/bbl', group:'Fuel'},
+    {symbol:'CL=F', name:'WTI Crude', unit:'USD/bbl', group:'Fuel'},
+    {symbol:'HO=F', name:'Heating Oil Futures', unit:'USD/gal', group:'Fuel'},
+    {symbol:'EURUSD=X', name:'EUR/USD', unit:'FX', group:'FX'},
+    {symbol:'^GDAXI', name:'DAX', unit:'Index', group:'Benchmark'},
+    {symbol:'^STOXX50E', name:'EURO STOXX 50', unit:'Index', group:'Benchmark'}
+  ];
+
+  const AIRPORTS = [
+    {id:'EDDF', name:'Frankfurt'}, {id:'EDDM', name:'München'}, {id:'EDDB', name:'Berlin BER'},
+    {id:'LOWW', name:'Wien'}, {id:'LOWG', name:'Graz'}, {id:'LOWS', name:'Salzburg'}, {id:'LSZH', name:'Zürich'}, {id:'EHAM', name:'Amsterdam'}
+  ];
+
+  const CACHE_KEY = 'aviation-market-dashboard-onefile-v2';
+  const SETTINGS_KEY = 'aviation-market-dashboard-onefile-settings-v2';
+  const fmt = new Intl.NumberFormat('de-DE', {maximumFractionDigits:2});
+  const fmt0 = new Intl.NumberFormat('de-DE', {maximumFractionDigits:0});
+  const fmt4 = new Intl.NumberFormat('de-DE', {maximumFractionDigits:4});
+  const pctFmt = new Intl.NumberFormat('de-DE', {signDisplay:'always', maximumFractionDigits:2});
+  const timeFmt = new Intl.DateTimeFormat('de-DE', {dateStyle:'medium', timeStyle:'medium'});
+  const shortFmt = new Intl.DateTimeFormat('de-DE', {hour:'2-digit', minute:'2-digit'});
+  const $ = sel => document.querySelector(sel);
+  const els = {
+    updateBtn:$('#updateBtn'), themeBtn:$('#themeBtn'), refreshSelect:$('#refreshSelect'), globalUpdate:$('#globalUpdate'), globalUpdateSub:$('#globalUpdateSub'), dataStatus:$('#dataStatus'), dataStatusSub:$('#dataStatusSub'), liveLabel:$('#liveLabel'),
+    kpiArea:$('#kpiArea'), tickerTrack:$('#tickerTrack'), stockBody:$('#stockBody'), filters:$('#filters'), searchInput:$('#searchInput'), equityCount:$('#equityCount'), lastStockUpdate:$('#lastStockUpdate'), fuelCards:$('#fuelCards'), fuelUpdated:$('#fuelUpdated'), macroBody:$('#macroBody'), pulseCards:$('#pulseCards'), sectorBars:$('#sectorBars'), opsCards:$('#opsCards'), opsUpdated:$('#opsUpdated'), metarList:$('#metarList'), toast:$('#toast')
+  };
+  const state = {stocks:[], macros:[], jetFuel:null, opensky:null, metars:[], errors:[], lastUpdate:null, fromCache:false, activeFilter:'Alle', query:''};
+  let settings = loadSettings(); let refreshTimer = null;
+
+  function loadSettings(){try{return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {theme:'dark'};}catch(_){return {theme:'dark'};}}
+  function saveSettings(){localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));}
+  function applySettings(){document.body.classList.toggle('light', settings.theme === 'light');}
+  function safeNum(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+  function num(v,fallback='–'){const n=safeNum(v);return n===null?fallback:fmt.format(n);}
+  function num0(v,fallback='–'){const n=safeNum(v);return n===null?fallback:fmt0.format(n);}
+  function num4(v,fallback='–'){const n=safeNum(v);return n===null?fallback:fmt4.format(n);}
+  function pct(v,fallback='–'){const n=safeNum(v);return n===null?fallback:pctFmt.format(n)+'%';}
+  function cls(v){const n=safeNum(v);if(n===null)return'neutral';if(n>.15)return'up';if(n<-.15)return'down';return'neutral';}
+  function esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function fmtTime(v){if(!v)return'–';const d=new Date(v);return Number.isNaN(+d)?'–':timeFmt.format(d);}
+  function fmtShort(v){if(!v)return'–';const d=new Date(v);return Number.isNaN(+d)?'–':shortFmt.format(d);}
+  function toast(msg){const div=document.createElement('div');div.textContent=msg;els.toast.appendChild(div);setTimeout(()=>{div.style.opacity='0';div.style.transform='translateY(8px)'},3800);setTimeout(()=>div.remove(),4700);}
+  function setLoading(on){document.body.classList.toggle('loading',!!on);els.updateBtn.disabled=!!on;}
+
+  const PROXIES = [
+    {name:'direct', build:url=>url},
+    {name:'allorigins', build:url=>'https://api.allorigins.win/raw?url='+encodeURIComponent(url)},
+    {name:'corsproxy', build:url=>'https://corsproxy.io/?'+encodeURIComponent(url)},
+    {name:'codetabs', build:url=>'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(url)},
+    {name:'thingproxy', build:url=>'https://thingproxy.freeboard.io/fetch/'+url}
+  ];
+
+  async function fetchAny(target,{type='json', timeout=14000, quiet=false}={}){
+    const controllers = [];
+    const attempts = PROXIES.map(p => new Promise((resolve, reject) => {
+      const controller = new AbortController();
+      controllers.push(controller);
+      const timer = setTimeout(() => controller.abort(), timeout);
+      fetch(p.build(target), {
+        signal: controller.signal,
+        cache: 'no-store',
+        headers: {'Accept': type === 'json' ? 'application/json,text/plain,*/*' : 'text/plain,*/*'}
+      }).then(async res => {
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const data = type === 'text' ? await res.text() : await res.json();
+        resolve({data, via:p.name});
+      }).catch(reject).finally(() => clearTimeout(timer));
+    }));
+    try{
+      const result = await Promise.any(attempts);
+      controllers.forEach(c => { try{ c.abort(); }catch(_){} });
+      return result;
+    }catch(e){
+      if(!quiet) state.errors.push(target.replace(/^https?:\/\//,'').slice(0,85)+': nicht erreichbar');
+      throw e;
+    }
+  }
+
+  async function yahooQuotes(symbols){
+    const url = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + encodeURIComponent(symbols.join(','));
+    try{
+      const {data, via} = await fetchAny(url, {type:'json', timeout:15000});
+      const arr = data && data.quoteResponse && Array.isArray(data.quoteResponse.result) ? data.quoteResponse.result : [];
+      if(!arr.length) throw new Error('Keine Yahoo-Quotes');
+      return arr.map(q => ({symbol:q.symbol, price:q.regularMarketPrice, change:q.regularMarketChange, changePct:q.regularMarketChangePercent, previousClose:q.regularMarketPreviousClose, volume:q.regularMarketVolume, currency:q.currency, marketState:q.marketState, exchange:q.fullExchangeName || q.exchange, marketTime:q.regularMarketTime ? new Date(q.regularMarketTime*1000).toISOString() : null, via, ok:true}));
+    }catch(e){
+      return yahooCharts(symbols);
+    }
+  }
+
+  async function yahooCharts(symbols){
+    const out = [];
+    const queue = symbols.slice();
+    async function worker(){
+      while(queue.length){
+        const symbol = queue.shift();
+        const url = 'https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?range=1d&interval=5m&includePrePost=false';
+        try{
+          const {data, via} = await fetchAny(url, {type:'json', timeout:15000, quiet:true});
+          const result = data && data.chart && data.chart.result && data.chart.result[0];
+          if(!result) throw new Error('Keine Chartdaten');
+          const meta = result.meta || {}; const q = result.indicators && result.indicators.quote && result.indicators.quote[0] || {};
+          const closes = (result.indicators && result.indicators.quote && result.indicators.quote[0] && result.indicators.quote[0].close || []).filter(v=>Number.isFinite(Number(v)));
+          const price = safeNum(meta.regularMarketPrice) ?? closes[closes.length-1] ?? null;
+          const prev = safeNum(meta.chartPreviousClose) ?? safeNum(meta.previousClose);
+          const change = price!==null && prev!==null ? price-prev : null;
+          const changePct = price!==null && prev ? (price-prev)/prev*100 : null;
+          const volume = Array.isArray(q.volume) ? q.volume.filter(v=>Number.isFinite(Number(v))).reduce((a,b)=>a+Number(b),0) : null;
+          out.push({symbol, price, change, changePct, previousClose:prev, volume, currency:meta.currency, marketState:meta.marketState, exchange:meta.exchangeName, marketTime:meta.regularMarketTime ? new Date(meta.regularMarketTime*1000).toISOString() : new Date().toISOString(), via, ok:true});
+        }catch(e){out.push({symbol, ok:false, error:e.message || 'nicht geladen'});}
+      }
+    }
+    await Promise.all(Array.from({length:5}, worker));
+    return out;
+  }
+
+  async function updateMarket(){
+    const allSymbols = [...STOCKS.map(x=>x.symbol), ...MACROS.map(x=>x.symbol)];
+    const quotes = await yahooQuotes(allSymbols);
+    const bySym = new Map(quotes.map(q=>[q.symbol,q]));
+    const now = new Date().toISOString();
+    state.stocks = STOCKS.map(meta => ({...meta, ...(bySym.get(meta.symbol)||{}), updatedAt:now}));
+    state.macros = MACROS.map(meta => ({...meta, ...(bySym.get(meta.symbol)||{}), updatedAt:now}));
+  }
+
+  async function updateJetFuel(){
+    const url = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=JETFUELUSGULF';
+    try{
+      const {data, via} = await fetchAny(url, {type:'text', timeout:15000, quiet:true});
+      const rows = data.trim().split(/\r?\n/).slice(1).map(r=>r.split(',')).filter(r=>r.length>=2 && r[1] !== '.').map(r=>({date:r[0], value:Number(r[1])})).filter(r=>Number.isFinite(r.value));
+      const last = rows[rows.length-1], prev = rows[rows.length-2];
+      state.jetFuel = last ? {ok:true, name:'Jet Fuel Spot', value:last.value, date:last.date, changePct:prev ? (last.value-prev.value)/prev.value*100 : null, via, updatedAt:new Date().toISOString()} : null;
+    }catch(e){state.jetFuel = null;}
+  }
+
+  function inBox(s,box){const lon=s[5],lat=s[6];return Number.isFinite(lon)&&Number.isFinite(lat)&&lat>=box.lamin&&lat<=box.lamax&&lon>=box.lomin&&lon<=box.lomax;}
+  async function updateOps(){
+    const url = 'https://opensky-network.org/api/states/all?lamin=35&lomin=-11&lamax=72&lomax=33';
+    try{
+      const {data, via} = await fetchAny(url,{type:'json',timeout:15000,quiet:true});
+      const states = Array.isArray(data.states) ? data.states : [];
+      const airborne = states.filter(s=>s && s[8]===false).length;
+      const de = states.filter(s=>s && s[8]===false && inBox(s,{lamin:47.2,lomin:5.5,lamax:55.2,lomax:15.4})).length;
+      const at = states.filter(s=>s && s[8]===false && inBox(s,{lamin:46.3,lomin:9.4,lamax:49.2,lomax:17.3})).length;
+      state.opensky = {ok:true, airborne, de, at, via, updatedAt:new Date().toISOString()};
+    }catch(e){state.opensky = null;}
+  }
+
+  async function updateMetar(){
+    const ids = AIRPORTS.map(a=>a.id).join(',');
+    const url = 'https://aviationweather.gov/api/data/metar?ids='+encodeURIComponent(ids)+'&format=json';
+    try{
+      const {data, via} = await fetchAny(url,{type:'json',timeout:15000,quiet:true});
+      const arr = Array.isArray(data) ? data : [];
+      state.metars = AIRPORTS.map(a=>{
+        const m = arr.find(x=>x.icaoId===a.id || x.station_id===a.id) || {};
+        const raw = m.rawOb || m.raw_text || '';
+        return raw ? {ok:true, id:a.id, name:a.name, category:m.flightCategory || m.flight_category || '–', temp:m.temp ?? m.temp_c, wind:m.wspd ?? m.wind_speed_kt ?? '–', visib:m.visib ?? m.visibility_statute_mi ?? '–', raw, via, updatedAt:new Date().toISOString()} : {ok:false,id:a.id,name:a.name,error:'kein METAR'};
+      });
+    }catch(e){state.metars = AIRPORTS.map(a=>({ok:false,id:a.id,name:a.name,error:'nicht geladen'}));}
+  }
+
+  function saveCache(){try{localStorage.setItem(CACHE_KEY, JSON.stringify({stocks:state.stocks, macros:state.macros, jetFuel:state.jetFuel, opensky:state.opensky, metars:state.metars, lastUpdate:state.lastUpdate}));}catch(_){}}
+  function loadCache(){try{const c=JSON.parse(localStorage.getItem(CACHE_KEY));if(c && (c.stocks||c.macros)){Object.assign(state,c,{fromCache:true});renderAll();return true;}}catch(_){} return false;}
+
+  async function updateDashboard(manual=false){
+    setLoading(true); state.errors=[]; state.fromCache=false;
+    try{
+      await Promise.allSettled([updateMarket(), updateJetFuel(), updateOps(), updateMetar()]);
+      const liveOk = loadedCount(state.stocks)+loadedCount(state.macros)+(state.jetFuel?1:0)+(state.opensky?1:0)+state.metars.filter(x=>x.ok).length;
+      if(liveOk===0 && loadCache()){
+        state.fromCache = true;
+        if(manual) toast('Gerade keine Live-Werte erreichbar. Letzter Stand bleibt sichtbar.');
+      } else {
+        state.lastUpdate = new Date().toISOString();
+        if(liveOk>0) saveCache();
+        renderAll();
+        if(manual) toast(liveOk>0 ? 'Dashboard aktualisiert.' : 'Gerade keine Live-Werte erreichbar.');
+      }
+    }catch(e){loadCache(); state.fromCache=true; renderAll(); toast('Aktualisierung nicht vollständig. Letzter Stand bleibt sichtbar.');}
+    finally{setLoading(false);}
+  }
+
+  function avgPct(arr,filter=()=>true){const vals=arr.filter(x=>x.ok!==false && filter(x)).map(x=>safeNum(x.changePct)).filter(v=>v!==null);return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;}
+  function loadedCount(arr){return arr.filter(x=>x.ok!==false && safeNum(x.price)!==null).length;}
+  function latestTime(items){const times=items.map(x=>x.marketTime||x.updatedAt).filter(Boolean).map(x=>+new Date(x)).filter(Number.isFinite);return times.length ? new Date(Math.max(...times)).toISOString() : null;}
+
+  function renderGlobal(){
+    els.globalUpdate.textContent = state.lastUpdate ? fmtTime(state.lastUpdate) : 'Noch kein Update';
+    els.globalUpdateSub.textContent = state.fromCache ? 'Letzter gespeicherter Stand.' : (state.lastUpdate ? 'Alle Bereiche wurden neu berechnet.' : 'Beim Öffnen wird automatisch aktualisiert.');
+    const total = STOCKS.length + MACROS.length + 1 + 1 + AIRPORTS.length;
+    const ok = loadedCount(state.stocks)+loadedCount(state.macros)+(state.jetFuel?1:0)+(state.opensky?1:0)+state.metars.filter(x=>x.ok).length;
+    let label='Live'; let clsName='good'; let sub='Daten aktualisiert.';
+    if(!state.lastUpdate){label='Initialisierung';clsName='warn';sub='Live-Daten werden geladen.';}
+    else if(ok===0){label='Offline';clsName='bad';sub='Keine Live-Werte erreichbar.';}
+    else if(ok<Math.round(total*.55)){label='Teilweise';clsName='warn';sub='Ein Teil der Werte ist geladen.';}
+    else if(ok<total){label='Live / teilweise';clsName='warn';sub='Marktüberblick ist nutzbar; einzelne Werte fehlen.';}
+    els.dataStatus.textContent=label; els.dataStatus.className='big '+clsName; els.dataStatusSub.textContent=sub; els.liveLabel.textContent = label.includes('Live') ? 'Live Marktüberblick' : 'Marktüberblick';
+  }
+
+  function renderKPIs(){
+    const basket = avgPct(state.stocks);
+    const airlines = avgPct(state.stocks,x=>x.segment==='Airline');
+    const industrials = avgPct(state.stocks,x=>x.segment==='OEM'||x.segment==='Supplier');
+    const airports = avgPct(state.stocks,x=>x.segment==='Airport');
+    const brent = state.macros.find(x=>x.symbol==='BZ=F');
+    const eur = state.macros.find(x=>x.symbol==='EURUSD=X');
+    const ops = state.opensky;
+    const cards = [
+      ['Aviation Basket', pct(basket), `${loadedCount(state.stocks)}/${STOCKS.length} Werte`, cls(basket)],
+      ['Airlines', pct(airlines), 'Europa Airline Basket', cls(airlines)],
+      ['OEM & Supplier', pct(industrials), 'Airbus, Boeing, MTU, Safran …', cls(industrials)],
+      ['Airports', pct(airports), 'Fraport, Wien, ADP, Aena', cls(airports)],
+      ['Brent', brent && safeNum(brent.price)!==null ? num(brent.price) : '–', brent ? pct(brent.changePct) : 'Fuel', brent ? cls(brent.changePct) : 'neutral'],
+      ['EUR/USD', eur && safeNum(eur.price)!==null ? num4(eur.price) : '–', eur ? pct(eur.changePct) : 'FX', eur ? cls(eur.changePct) : 'neutral']
+    ];
+    els.kpiArea.innerHTML = cards.map(c=>`<div class="kpi"><div class="name">${esc(c[0])}</div><div class="val ${c[3]}">${esc(c[1])}</div><div class="sub">${esc(c[2])}</div></div>`).join('');
+  }
+
+  function renderTicker(){
+    const items = [...state.stocks, ...state.macros].filter(x=>x.ok!==false && safeNum(x.price)!==null).slice(0,34);
+    const html = items.map(x=>`<div class="tickerItem"><b>${esc(x.name||x.symbol)}</b><span>${esc((x.currency==='GBp'||x.currency==='GBP')?num(x.price):num(x.price))}</span><span class="${cls(x.changePct)}">${esc(pct(x.changePct))}</span></div>`).join('');
+    els.tickerTrack.innerHTML = html ? html + html : '<div class="tickerItem">Marktdaten werden geladen …</div>';
+  }
+
+  function renderFilters(){
+    const filters = ['Alle','Airline','OEM','Supplier','Airport','Deutschland','Österreich','Europa'];
+    els.filters.innerHTML = filters.map(f=>`<button class="pill ${state.activeFilter===f?'active':''}" data-filter="${esc(f)}">${esc(f)}</button>`).join('');
+    els.filters.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{state.activeFilter=btn.dataset.filter;renderFilters();renderStocks();});
+  }
+  function matchesFilter(x){const f=state.activeFilter;if(f==='Alle')return true;if(['Airline','OEM','Supplier','Airport'].includes(f))return x.segment===f;return x.focus===f;}
+  function renderStocks(){
+    const q=state.query.trim().toLowerCase();
+    const rows=state.stocks.filter(matchesFilter).filter(x=>!q || [x.symbol,x.name,x.segment,x.focus,x.aliases].join(' ').toLowerCase().includes(q));
+    els.equityCount.textContent = `${loadedCount(rows)}/${rows.length} Werte`;
+    const latest = latestTime(state.stocks);
+    els.lastStockUpdate.textContent = latest ? `Letztes Aktien-Update: ${fmtTime(latest)}` : 'Letztes Aktien-Update: –';
+    if(!rows.length){els.stockBody.innerHTML='<tr><td colspan="8"><div class="empty">Keine passenden Werte.</div></td></tr>';return;}
+    els.stockBody.innerHTML = rows.map(x=>{
+      const price = safeNum(x.price)!==null ? `${num(x.price)} ${esc(x.currency||'')}` : '–';
+      const vol = safeNum(x.volume)!==null ? num0(x.volume) : '–';
+      const initials = x.name.split(/\s|-/).filter(Boolean).slice(0,2).map(s=>s[0]).join('').toUpperCase();
+      return `<tr><td><div class="company"><div class="avatar">${esc(initials)}</div><div><b>${esc(x.name)}</b><div class="small">${esc(x.symbol)}</div></div></div></td><td><span class="tag">${esc(x.segment)}</span></td><td>${esc(x.focus)}</td><td><b>${price}</b></td><td class="${cls(x.changePct)}"><b>${esc(pct(x.changePct))}</b><div class="small">${esc(num(x.change))}</div></td><td>${esc(vol)}</td><td>${esc(fmtShort(x.marketTime||x.updatedAt))}</td><td><span class="tag">${esc(x.marketState || (x.ok===false?'n/a':'–'))}</span></td></tr>`;
+    }).join('');
+  }
+
+  function renderPulse(){
+    const okStocks = state.stocks.filter(x=>x.ok!==false && safeNum(x.changePct)!==null);
+    const best = okStocks.slice().sort((a,b)=>b.changePct-a.changePct)[0];
+    const worst = okStocks.slice().sort((a,b)=>a.changePct-b.changePct)[0];
+    const dach = avgPct(state.stocks,x=>x.focus==='Deutschland'||x.focus==='Österreich');
+    const global = avgPct(state.stocks);
+    els.pulseCards.innerHTML = [
+      ['Top Mover', best ? best.name : '–', best ? pct(best.changePct) : '–', best?cls(best.changePct):'neutral'],
+      ['Weakest', worst ? worst.name : '–', worst ? pct(worst.changePct) : '–', worst?cls(worst.changePct):'neutral'],
+      ['DACH Basket', pct(dach), 'Deutschland & Österreich', cls(dach)],
+      ['Europe Basket', pct(global), 'Gesamte Watchlist', cls(global)]
+    ].map(c=>`<div class="mini"><div class="name">${esc(c[0])}</div><div class="num ${c[3]}" style="font-size:20px">${esc(c[1])}</div><div class="desc">${esc(c[2])}</div></div>`).join('');
+    const groups = ['Airline','OEM','Supplier','Airport'].map(g=>({g,v:avgPct(state.stocks,x=>x.segment===g),n:state.stocks.filter(x=>x.ok!==false&&x.segment===g&&safeNum(x.price)!==null).length}));
+    els.sectorBars.innerHTML = groups.map(x=>{const width=x.v===null?50:Math.max(0,Math.min(100,50+x.v*9));return `<div class="barrow"><div class="barlabel">${esc(x.g)} · ${x.n}</div><div class="bartrack"><div class="barfill" style="width:${width}%"></div></div><b class="${cls(x.v)}">${esc(pct(x.v))}</b></div>`;}).join('');
+  }
+
+  function renderFuel(){
+    const brent=state.macros.find(x=>x.symbol==='BZ=F'), wti=state.macros.find(x=>x.symbol==='CL=F'), heat=state.macros.find(x=>x.symbol==='HO=F'), eur=state.macros.find(x=>x.symbol==='EURUSD=X');
+    const jet=state.jetFuel;
+    els.fuelUpdated.textContent = `Update: ${fmtTime(latestTime([...state.macros, jet||{}]))}`;
+    const cards = [
+      ['Jet Fuel Spot', jet ? num(jet.value) : '–', jet ? `USD/gal · ${pct(jet.changePct)} · ${jet.date}` : '–', jet?cls(jet.changePct):'neutral'],
+      ['Brent', brent&&safeNum(brent.price)!==null?num(brent.price):'–', brent?pct(brent.changePct):'–', brent?cls(brent.changePct):'neutral'],
+      ['Heating Oil', heat&&safeNum(heat.price)!==null?num(heat.price):'–', heat?pct(heat.changePct):'–', heat?cls(heat.changePct):'neutral'],
+      ['EUR/USD', eur&&safeNum(eur.price)!==null?num4(eur.price):'–', eur?pct(eur.changePct):'–', eur?cls(eur.changePct):'neutral']
+    ];
+    els.fuelCards.innerHTML = cards.map(c=>`<div class="mini"><div class="name">${esc(c[0])}</div><div class="num ${c[3]}">${esc(c[1])}</div><div class="desc">${esc(c[2])}</div></div>`).join('');
+    const macroRows = [...(jet?[{name:'Jet Fuel Spot', price:jet.value, changePct:jet.changePct, unit:'USD/gal', marketTime:jet.updatedAt}]:[]), ...state.macros].filter(x=>x && (x.name));
+    els.macroBody.innerHTML = macroRows.length ? macroRows.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${esc((x.symbol==='EURUSD=X')?num4(x.price):num(x.price||x.value))} ${esc(x.currency||x.unit||'')}</td><td class="${cls(x.changePct)}"><b>${esc(pct(x.changePct))}</b></td><td>${esc(fmtShort(x.marketTime||x.updatedAt))}</td></tr>`).join('') : '<tr><td colspan="4"><div class="empty">Noch keine Fuel-/Macro-Daten.</div></td></tr>';
+  }
+
+  function renderOps(){
+    const sky=state.opensky;
+    els.opsUpdated.textContent = `Update: ${fmtTime((sky&&sky.updatedAt) || latestTime(state.metars))}`;
+    const ops = [
+      ['Europa airborne', sky ? String(sky.airborne) : '–', 'Live-Flugbewegungen'],
+      ['Deutschland', sky ? String(sky.de) : '–', 'Airborne im DE-Fokus'],
+      ['Österreich', sky ? String(sky.at) : '–', 'Airborne im AT-Fokus']
+    ];
+    els.opsCards.innerHTML = ops.map(o=>`<div class="mini"><div class="name">${esc(o[0])}</div><div class="num">${esc(o[1])}</div><div class="desc">${esc(o[2])}</div></div>`).join('');
+    els.metarList.innerHTML = state.metars.length ? state.metars.map(m=>`<div class="metar"><div class="metarTop"><b>${esc(m.id)} · ${esc(m.name)}</b><span class="tag">${m.ok?esc(m.category):'–'}</span></div>${m.ok?`<div class="small">Temp: ${num(m.temp)} °C · Wind: ${esc(m.wind)} kt · Sicht: ${esc(m.visib)}</div><div class="raw">${esc(m.raw)}</div>`:`<div class="small">Aktuell kein Wetterwert.</div>`}</div>`).join('') : '<div class="empty">Noch keine Airport-Wetterdaten.</div>';
+  }
+
+  function renderAll(){renderGlobal();renderKPIs();renderTicker();renderFilters();renderStocks();renderPulse();renderFuel();renderOps();}
+  function setupAutoRefresh(){clearInterval(refreshTimer);const ms=Number(els.refreshSelect.value||0);if(ms>0)refreshTimer=setInterval(()=>updateDashboard(false),ms);}
+  function init(){applySettings();els.updateBtn.onclick=()=>updateDashboard(true);els.themeBtn.onclick=()=>{settings.theme=settings.theme==='light'?'dark':'light';saveSettings();applySettings();};els.refreshSelect.onchange=setupAutoRefresh;els.searchInput.oninput=e=>{state.query=e.target.value;renderStocks();};renderAll();loadCache();setupAutoRefresh();updateDashboard(false);}
+  init();
+})();
+</script>
+</body>
+</html>
